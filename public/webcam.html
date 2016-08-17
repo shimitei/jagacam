@@ -16,27 +16,73 @@ if (!navigator.getUserMedia) {
     alert("getUserMedia not supported");
 }
 
-$(function(){
-  var video = document.getElementById("video");
+window.onload = function() {
+  navigator.mediaDevices.enumerateDevices().then(function(sourcesInfo) {
+    var videoSroucesArray = sourcesInfo.filter(function(elem) {
+      return elem.kind == 'videoinput';
+    });
+    render(videoSroucesArray);
+  });
+
+  function render(videoSroucesArray) {
+    var option = $.map(videoSroucesArray, function(value,idx) {
+      $option = $('<option>', {
+        value:value.deviceId,
+        text:value.label || idx
+      });
+      return $option;
+    });
+    $('#camera').append(option);
+    $('#camera').change(function(){
+      var constraints = {
+        video: {
+            optional: [{
+                sourceId: $(this).val()
+            }]
+        },
+        audio: false
+      };
+      start(constraints);
+    });
+    start({video: true, audio: false});
+  }
+}
+
+var currentStream;
+function start(constraints) {
+  if (currentStream) {
+    currentStream.getVideoTracks().forEach(function(devise) {
+      devise.stop();
+    });
+    currentStream = null;
+  }
 
   navigator.getUserMedia (
-    { video: { width: 640, height: 480 }, audio: false },
+    constraints,
     function(stream) {
-      video.src  = window.URL.createObjectURL(stream);
+      currentStream = stream;
+      var video = document.getElementById('video');
+      video.src = window.URL.createObjectURL(stream);
       video.play();
     },
     function(err) {
       console.log(err);
     }
   );
-});
+}
     </script>
 </head>
 
 <body>
-    <article>
-        <video id="video" autoplay></video>
-    </article>
+    <div class="form-group">
+        <video id="video" width="320" height="240"/>
+    </div>
+    <div class="form-group">
+        <div class="form-inline">
+            <label>CAMERA: </label>
+            <select id="camera" class="form-control"/>
+        </div>
+    </div>
 </body>
 
 </html>
