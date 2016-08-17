@@ -15,6 +15,11 @@ io.on('connection', function (socket) {
     socket.on('disconnect', function () {
         console.log('websocket disconnect: %s', socket.id);
     });
+
+    socket.on('chat', function (msg) {
+        console.log("chat: " + msg);
+        io.sockets.emit('chat', msg);
+    });
 });
 
 http.listen(3000, function () {
