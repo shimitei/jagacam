@@ -92,7 +92,7 @@ window.onload = function() {
   function sendImage() {
     if (currentStream) {
       ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-      var data = canvas.toDataURL();
+      var data = canvas.toDataURL('image/jpeg');
       if (loopbackcb.checked) {
         socket.emit('camera-loopback', data);
       } else {
