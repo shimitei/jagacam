@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>JAGA-cam</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+    <script type="text/javascript" src="/socket.io/socket.io.js"></script>
+    <script type="text/javascript">
+window.URL = window.URL || window.webkitURL;
+navigator.getUserMedia = ( navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia || navigator.msGetUserMedia);
+
+if (!navigator.getUserMedia) {
+    console.log("getUserMedia not supported");
+    alert("getUserMedia not supported");
+}
+
+$(function(){
+  var video = document.getElementById("video");
+
+  navigator.getUserMedia (
+    { video: { width: 640, height: 480 }, audio: false },
+    function(stream) {
+      video.src  = window.URL.createObjectURL(stream);
+      video.play();
+    },
+    function(err) {
+      console.log(err);
+    }
+  );
+});
+    </script>
+</head>
+
+<body>
+    <article>
+        <video id="video" autoplay></video>
+    </article>
+</body>
+
+</html>
