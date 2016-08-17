@@ -17,6 +17,14 @@ if (!navigator.getUserMedia) {
 }
 
 window.onload = function() {
+  if (!navigator.getUserMedia) return;
+  var video = document.getElementById('video');
+  var canvas = document.getElementById('canvas');
+  var ctx = canvas.getContext('2d');
+  var remoteCamera = document.getElementById('remote-camera');
+  var loopbackcb = document.getElementById('loopback');
+  var currentStream;
+
   navigator.mediaDevices.enumerateDevices().then(function(sourcesInfo) {
     var videoSroucesArray = sourcesInfo.filter(function(elem) {
       return elem.kind == 'videoinput';
@@ -46,41 +54,74 @@ window.onload = function() {
     });
     start({video: true, audio: false});
   }
-}
 
-var currentStream;
-function start(constraints) {
-  if (currentStream) {
-    currentStream.getVideoTracks().forEach(function(devise) {
-      devise.stop();
-    });
-    currentStream = null;
+  function start(constraints) {
+    if (currentStream) {
+      currentStream.getVideoTracks().forEach(function(devise) {
+        devise.stop();
+      });
+      currentStream = null;
+    }
+
+    navigator.getUserMedia (
+      constraints,
+      function(stream) {
+        currentStream = stream;
+        video.src = window.URL.createObjectURL(stream);
+        video.play();
+      },
+      function(err) {
+        console.log(err);
+      }
+    );
   }
 
-  navigator.getUserMedia (
-    constraints,
-    function(stream) {
-      currentStream = stream;
-      var video = document.getElementById('video');
-      video.src = window.URL.createObjectURL(stream);
-      video.play();
-    },
-    function(err) {
-      console.log(err);
+  var socket = io.connect();
+  socket.on('connect', function() {
+    console.log("socket.io connected");
+  });
+  socket.on('disconnect', function() {
+    console.log('socket.io disconnect');
+  });
+
+  socket.on('camera-cast', function(data) {
+    remoteCamera.setAttribute('src', data.dataURL);
+  });
+
+  setInterval(sendImage, 1000);
+  function sendImage() {
+    if (currentStream) {
+      ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+      var data = canvas.toDataURL();
+      if (loopbackcb.checked) {
+        socket.emit('camera-loopback', data);
+      } else {
+        socket.emit('camera-cast', data);
+      }
     }
-  );
+  }
 }
     </script>
 </head>
 
 <body>
-    <div class="form-group">
-        <video id="video" width="320" height="240"/>
+    <div class="container">
+    <div class="row">
+        <video id="video" width="320" height="240" />
+        <canvas id="canvas" />
     </div>
-    <div class="form-group">
-        <div class="form-inline">
-            <label>CAMERA: </label>
-            <select id="camera" class="form-control"/>
+    <div class="row">
+        <img id="remote-camera" width="320" height="240"/>
+    </div>
+    <div class="row">
+        <div class="form-group">
+            <label>CAMERA</label>
+            <select id="camera" class="form-control" />
+        </div>
+    </div>
+    <div class="row">
+        <div class="form-group">
+            <input type="checkbox" id="loopback" /><label class="checkbox-inline" for="loopback">LOOPBACK TEST</label>
         </div>
     </div>
 </body>

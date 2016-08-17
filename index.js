@@ -20,6 +20,14 @@ io.on('connection', function (socket) {
         console.log("chat: " + msg);
         io.sockets.emit('chat', msg);
     });
+
+    socket.on('camera-cast', function (dataURL) {
+        socket.broadcast.emit('camera-cast', { id:socket.id, dataURL: dataURL });
+    });
+
+    socket.on('camera-loopback', function (dataURL) {
+        socket.emit('camera-cast', { id:socket.id, dataURL: dataURL });
+    });
 });
 
 http.listen(3000, function () {
