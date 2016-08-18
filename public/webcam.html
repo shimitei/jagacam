@@ -44,15 +44,17 @@ window.onload = function() {
     $('#camera').change(function(){
       var constraints = {
         video: {
-            optional: [{
-                sourceId: $(this).val()
-            }]
+          width: canvas.width,
+          height: canvas.height,
+          optional: [{
+            sourceId: $(this).val()
+          }]
         },
         audio: false
       };
       start(constraints);
     });
-    start({video: true, audio: false});
+    start({video: { width: canvas.width, height: canvas.height }, audio: false});
   }
 
   function start(constraints) {
@@ -108,10 +110,10 @@ window.onload = function() {
     <div class="container">
     <div class="row">
         <video id="video" width="320" height="240" />
-        <canvas id="canvas" width="320" height="240" />
+        <canvas id="canvas" width="640" height="480" />
     </div>
     <div class="row">
-        <img id="remote-camera" width="320" height="240"/>
+        <img id="remote-camera" width="640" height="480"/>
     </div>
     <div class="row">
         <div class="form-group">
