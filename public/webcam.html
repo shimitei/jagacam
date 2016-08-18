@@ -7,6 +7,7 @@
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
     <script type="text/javascript" src="/socket.io/socket.io.js"></script>
+    <script type="text/javascript" src="js/imglist.js"></script>
     <script type="text/javascript">
 window.URL = window.URL || window.webkitURL;
 navigator.getUserMedia = ( navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia || navigator.msGetUserMedia);
@@ -21,7 +22,6 @@ window.onload = function() {
   var video = document.getElementById('video');
   var canvas = document.getElementById('canvas');
   var ctx = canvas.getContext('2d');
-  var remoteCamera = document.getElementById('remote-camera');
   var loopbackcb = document.getElementById('loopback');
   var currentStream;
 
@@ -87,7 +87,10 @@ window.onload = function() {
   });
 
   socket.on('camera-cast', function(data) {
-    remoteCamera.setAttribute('src', data.dataURL);
+    MyImg.list.updateImage(data.id, data.dataURL);
+  });
+  socket.on('camera-out', function(id) {
+    MyImg.list.removeImage(id);
   });
 
   setInterval(sendImage, 1000);
@@ -113,7 +116,8 @@ window.onload = function() {
         <canvas id="canvas" width="320" height="240" />
     </div>
     <div class="row">
-        <img id="remote-camera" width="640" height="480"/>
+        <ul id="imglist" class="list-inline">
+        </ul>
     </div>
     <div class="row">
         <div class="form-group">
