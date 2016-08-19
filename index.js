@@ -9,21 +9,37 @@ app.get('/', function (req, res) {
     res.send('Hello world');
 });
 
+var roomMap = {};
 io.on('connection', function (socket) {
     console.log('websocket connect: %s %s', socket.client.conn.remoteAddress, socket.id);
 
     socket.on('disconnect', function () {
         console.log('websocket disconnect: %s', socket.id);
-        socket.broadcast.emit('camera-out', socket.id);
+        if (roomMap.hasOwnProperty(socket.id)) {
+            var room = roomMap[socket.id];
+            socket.to(room).emit('camera-out', socket.id);
+            delete roomMap[socket.id];
+        }
     });
 
     socket.on('chat', function (msg) {
-        console.log("chat: " + msg);
+        console.log("chat: ", msg);
         io.sockets.emit('chat', msg);
     });
 
+    socket.on('join', function (room) {
+        console.log("join: ", room);
+        socket.join(room, function (err) {
+            if (err) console.err(err);
+            else roomMap[socket.id] = room;
+        });
+    });
+
     socket.on('camera-cast', function (dataURL) {
-        socket.broadcast.emit('camera-cast', { id:socket.id, dataURL: dataURL });
+        if (roomMap.hasOwnProperty(socket.id)) {
+            var room = roomMap[socket.id];
+            socket.to(room).emit('camera-cast', { id:socket.id, dataURL: dataURL });
+        }
     });
 
     socket.on('camera-loopback', function (dataURL) {
