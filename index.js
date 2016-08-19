@@ -4,9 +4,13 @@ var http = require('http').Server(app);
 var io = require('socket.io')(http);
 
 app.use(express.static('public'));
+app.set('view engine', 'ejs');
 
 app.get('/', function (req, res) {
     res.send('Hello world');
+});
+app.get('/room', function (req, res) {
+    res.render('webcam', { room: 'default' });
 });
 
 var roomMap = {};

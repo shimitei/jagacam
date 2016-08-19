@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>JAGA-cam</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+    <script type="text/javascript" src="/socket.io/socket.io.js"></script>
+    <script type="text/javascript" src="js/imglist.js"></script>
+    <script type="text/javascript">
+window.URL = window.URL || window.webkitURL;
+navigator.getUserMedia = ( navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia || navigator.msGetUserMedia);
+
+if (!navigator.getUserMedia) {
+    console.log("getUserMedia not supported");
+    alert("getUserMedia not supported");
+}
+
+window.onload = function() {
+  if (!navigator.getUserMedia) return;
+  var video = document.getElementById('video');
+  var canvas = document.getElementById('canvas');
+  var ctx = canvas.getContext('2d');
+  var loopbackcb = document.getElementById('loopback');
+  var currentStream;
+
+  navigator.mediaDevices.enumerateDevices().then(function(sourcesInfo) {
+    var videoSroucesArray = sourcesInfo.filter(function(elem) {
+      return elem.kind == 'videoinput';
+    });
+    render(videoSroucesArray);
+  });
+
+  function render(videoSroucesArray) {
+    var option = $.map(videoSroucesArray, function(value,idx) {
+      $option = $('<option>', {
+        value:value.deviceId,
+        text:value.label || idx
+      });
+      return $option;
+    });
+    $('#camera').append(option);
+    $('#camera').change(function(){
+      var constraints = {
+        video: {
+          width: canvas.width,
+          height: canvas.height,
+          optional: [{
+            sourceId: $(this).val()
+          }]
+        },
+        audio: false
+      };
+      start(constraints);
+    });
+    start({video: { width: canvas.width, height: canvas.height }, audio: false});
+  }
+
+  function start(constraints) {
+    if (currentStream) {
+      currentStream.getVideoTracks().forEach(function(devise) {
+        devise.stop();
+      });
+      currentStream = null;
+    }
+
+    navigator.getUserMedia (
+      constraints,
+      function(stream) {
+        currentStream = stream;
+        video.src = window.URL.createObjectURL(stream);
+        video.play();
+      },
+      function(err) {
+        console.log(err);
+      }
+    );
+  }
+
+  var socket = io.connect();
+  socket.on('connect', function() {
+    console.log("socket.io connected");
+    socket.emit('join', 'default');
+  });
+  socket.on('disconnect', function() {
+    console.log('socket.io disconnect');
+  });
+
+  socket.on('camera-cast', function(data) {
+    MyImg.list.updateImage(data.id, data.dataURL);
+  });
+  socket.on('camera-out', function(id) {
+    MyImg.list.removeImage(id);
+  });
+
+  setInterval(sendImage, 1000);
+  function sendImage() {
+    if (currentStream) {
+      ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+      var data = canvas.toDataURL('image/jpeg');
+      if (loopbackcb.checked) {
+        socket.emit('camera-loopback', data);
+      } else {
+        socket.emit('camera-cast', data);
+      }
+    }
+  }
+}
+    </script>
+</head>
+
+<body>
+    <div class="container">
+    <div class="row">
+        <video id="video" width="320" height="240" />
+        <canvas id="canvas" width="320" height="240" />
+    </div>
+    <div class="row">
+        <ul id="imglist" class="list-inline">
+        </ul>
+    </div>
+    <div class="row">
+        <div class="form-group">
+            <label>CAMERA</label>
+            <select id="camera" class="form-control" />
+        </div>
+    </div>
+    <div class="row">
+        <div class="form-group">
+            <input type="checkbox" id="loopback" /><label class="checkbox-inline" for="loopback">LOOPBACK TEST</label>
+        </div>
+    </div>
+</body>
+
+</html>
