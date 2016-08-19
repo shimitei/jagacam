@@ -23,12 +23,12 @@ io.on('connection', function (socket) {
     });
 
     socket.on('chat', function (msg) {
-        console.log("chat: ", msg);
+        console.log("chat:", msg);
         io.sockets.emit('chat', msg);
     });
 
     socket.on('join', function (room) {
-        console.log("join: ", room);
+        console.log("join:", room, socket.id);
         socket.join(room, function (err) {
             if (err) console.err(err);
             else roomMap[socket.id] = room;
