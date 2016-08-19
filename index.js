@@ -1,17 +1,19 @@
 var express = require('express');
 var app = express();
+var router = express.Router();
 var http = require('http').Server(app);
 var io = require('socket.io')(http);
 
 app.use(express.static('public'));
 app.set('view engine', 'ejs');
 
-app.get('/', function (req, res) {
+router.get('/', function (req, res) {
     res.send('Hello world');
 });
-app.get('/room', function (req, res) {
+router.get('/room', function (req, res) {
     res.render('webcam', { room: 'default' });
 });
+app.use(router);
 
 var roomMap = {};
 io.on('connection', function (socket) {
