@@ -8,7 +8,7 @@
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
     <script type="text/javascript" src="/socket.io/socket.io.js"></script>
-    <script type="text/javascript" src="js/imglist.js"></script>
+    <script type="text/javascript" src="/js/imglist.js"></script>
     <script type="text/javascript">
 window.URL = window.URL || window.webkitURL;
 navigator.getUserMedia = ( navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia || navigator.msGetUserMedia);
@@ -82,7 +82,7 @@ window.onload = function() {
   var socket = io.connect();
   socket.on('connect', function() {
     console.log("socket.io connected");
-    socket.emit('join', 'default');
+    socket.emit('join', '<%= room %>');
   });
   socket.on('disconnect', function() {
     console.log('socket.io disconnect');

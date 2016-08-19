@@ -13,6 +13,9 @@ router.get('/', function (req, res) {
 router.get('/room', function (req, res) {
     res.render('webcam', { room: 'default' });
 });
+router.get('/room/:id', function (req, res) {
+    res.render('webcam', { room: req.params.id });
+});
 app.use(router);
 
 var roomMap = {};
