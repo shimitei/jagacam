@@ -1,6 +1,6 @@
 {
   "name": "jagacam",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "WebCAM communication",
   "main": "index.js",
   "scripts": {
