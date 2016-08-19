@@ -11,7 +11,7 @@
     "type": "git",
     "url": "git+https://github.com/shimitei/jagacam.git"
   },
-  "license": "APSL-2.0",
+  "license": "Apache-2.0",
   "bugs": {
     "url": "https://github.com/shimitei/jagacam/issues"
   },
