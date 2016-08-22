@@ -11,10 +11,16 @@ router.get('/', function (req, res) {
     res.send('Hello world');
 });
 router.get('/room', function (req, res) {
-    res.render('webcam', { room: 'default' });
+    const room = req.query.id || 'default';
+    const mimetype = 'image/' + (req.query.mt || 'jpeg');
+    const quality = req.query.q || '0.75';
+    res.render('webcam', { room: room, mimetype: mimetype, quality: quality });
 });
 router.get('/room/:id', function (req, res) {
-    res.render('webcam', { room: req.params.id });
+    const room = req.params.id || 'default';
+    const mimetype = 'image/' + (req.query.mt || 'jpeg');
+    const quality = req.query.q || '0.75';
+    res.render('webcam', { room: room, mimetype: mimetype, quality: quality });
 });
 app.use(router);
 
