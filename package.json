@@ -19,10 +19,10 @@
   "dependencies": {
     "ejs": "^2.5.2",
     "express": "^4.14.0",
-    "socket.io": "git://github.com/shimitei/socket.io.git"
+    "socket.io": "^1.5.0"
   },
   "engines": {
-    "node": "4.6.0",
+    "node": "4.7.0",
     "npm": "3.10.8"
   }
 }
