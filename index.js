@@ -1,8 +1,8 @@
-var express = require('express');
-var app = express();
-var router = express.Router();
-var http = require('http').Server(app);
-var io = require('socket.io')(http);
+const express = require('express');
+const app = express();
+const router = express.Router();
+const http = require('http').Server(app);
+const io = require('socket.io')(http);
 
 app.use(express.static('public'));
 app.set('view engine', 'ejs');
@@ -24,14 +24,14 @@ router.get('/room/:id', function (req, res) {
 });
 app.use(router);
 
-var roomMap = {};
+const roomMap = {};
 io.on('connection', function (socket) {
     console.log('websocket connect: %s %s', socket.client.conn.remoteAddress, socket.id);
 
     socket.on('disconnect', function () {
         console.log('websocket disconnect: %s', socket.id);
         if (roomMap.hasOwnProperty(socket.id)) {
-            var room = roomMap[socket.id];
+            const room = roomMap[socket.id];
             socket.to(room).emit('camera-out', socket.id);
             delete roomMap[socket.id];
         }
@@ -52,7 +52,7 @@ io.on('connection', function (socket) {
 
     socket.on('camera-cast', function (dataURL) {
         if (roomMap.hasOwnProperty(socket.id)) {
-            var room = roomMap[socket.id];
+            const room = roomMap[socket.id];
             socket.to(room).emit('camera-cast', { id:socket.id, dataURL: dataURL });
         }
     });
@@ -62,7 +62,7 @@ io.on('connection', function (socket) {
     });
 });
 
-var port = process.env.PORT || 3000;
+const port = process.env.PORT || 3000;
 http.listen(port, function () {
     console.log('listening on *:', port);
 });
