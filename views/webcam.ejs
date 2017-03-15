@@ -5,10 +5,11 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <title>JAGA-cam</title>
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
     <script type="text/javascript" src="/socket.io/socket.io.js"></script>
     <script type="text/javascript" src="/js/imglist.js"></script>
+    <script type="text/javascript" src="/js/filelist.js"></script>
     <script type="text/javascript">
 window.URL = window.URL || window.webkitURL;
 navigator.getUserMedia = ( navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia || navigator.msGetUserMedia);
@@ -93,6 +94,10 @@ window.onload = function() {
     MyImg.list.removeImage(id);
   });
 
+  socket.on('file-cast', function(data) {
+    MyFile.list.updateContent(data);
+  });
+
   setInterval(sendImage, 1000);
   function sendImage() {
     if (currentStream) {
@@ -105,6 +110,13 @@ window.onload = function() {
       }
     }
   }
+
+  $('#file').change(function() {
+    var file = this.files[0];
+    if (file) {
+      socket.emit('file-cast', {name:file.name, type:file.type, data:file});
+    }
+  });
 }
     </script>
 </head>
@@ -116,10 +128,6 @@ window.onload = function() {
         <canvas id="canvas" width="320" height="240" />
     </div>
     <div class="row">
-        <ul id="imglist" class="list-inline">
-        </ul>
-    </div>
-    <div class="row">
         <div class="form-group">
             <label>CAMERA</label>
             <select id="camera" class="form-control" />
@@ -129,6 +137,17 @@ window.onload = function() {
         <div class="form-group">
             <input type="checkbox" id="loopback" /><label class="checkbox-inline" for="loopback">LOOPBACK TEST</label>
         </div>
+    </div>
+    <div class="row">
+        <div class="form-group">
+            <input type="file" id="file" class="form-control" />
+        </div>
+    </div>
+    <div class="row">
+        <ul id="imglist" class="col-sm-4">
+        </ul>
+        <ul id="filelist" class="col-sm-8">
+        </ul>
     </div>
 </body>
 

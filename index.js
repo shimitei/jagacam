@@ -7,6 +7,7 @@ const io = require('socket.io')(http);
 app.use(express.static('public'));
 app.set('view engine', 'ejs');
 
+const roomFileMap = {};
 router.get('/', function (req, res) {
     res.send('Hello world');
 });
@@ -21,6 +22,19 @@ router.get('/room/:id', function (req, res) {
     const mimetype = 'image/' + (req.query.mt || 'jpeg');
     const quality = req.query.q || '0.75';
     res.render('webcam', { room: room, mimetype: mimetype, quality: quality });
+});
+router.get('/file/:id', function (req, res) {
+    const room = req.params.id || 'default';
+    const file = roomFileMap[room];
+    if (file) {
+        //res.setHeader('Cache-Control', 'no-cache');
+        res.setHeader('Content-Type', file.type);
+        res.setHeader('Accept', file.type);
+        res.write(file.data);
+    } else {
+        res.sendStatus(404);
+    }
+    res.end();
 });
 app.use(router);
 
@@ -54,6 +68,16 @@ io.on('connection', function (socket) {
         if (roomMap.hasOwnProperty(socket.id)) {
             const room = roomMap[socket.id];
             socket.to(room).emit('camera-cast', { id:socket.id, dataURL: dataURL });
+        }
+    });
+
+    socket.on('file-cast', function (file) {
+        if (roomMap.hasOwnProperty(socket.id)) {
+            const room = roomMap[socket.id];
+            roomFileMap[room] = file;
+            const data = {type:file.type, uri:'/file/' + room};
+            socket.to(room).emit('file-cast', data);
+            socket.emit('file-cast', data);
         }
     });
 
