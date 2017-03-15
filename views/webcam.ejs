@@ -47,15 +47,13 @@ window.onload = function() {
         video: {
           width: canvas.width,
           height: canvas.height,
-          optional: [{
-            sourceId: $(this).val()
-          }]
+          deviceId: $(this).val()
         },
-        audio: false
+        audio: undefined
       };
       start(constraints);
     });
-    start({video: { width: canvas.width, height: canvas.height }, audio: false});
+    start({video: { width: canvas.width, height: canvas.height }, audio: undefined});
   }
 
   function start(constraints) {
