@@ -74,10 +74,17 @@ io.on('connection', function (socket) {
     socket.on('file-cast', function (file) {
         if (roomMap.hasOwnProperty(socket.id)) {
             const room = roomMap[socket.id];
-            roomFileMap[room] = file;
-            const data = {type:file.type, uri:'/file/' + room};
-            socket.to(room).emit('file-cast', data);
-            socket.emit('file-cast', data);
+            if (file) {
+                roomFileMap[room] = file;
+                const data = {type:file.type, uri:'/file/' + room};
+                socket.to(room).emit('file-cast', data);
+                socket.emit('file-cast', data);
+            } else {
+                file = roomFileMap[room];
+                if (file) {
+                    socket.emit('file-cast', {type:file.type, uri:'/file/' + room});
+                }
+            }
         }
     });
 
