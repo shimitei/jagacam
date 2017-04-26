@@ -22,11 +22,11 @@
     "socket.io": "^1.7.3"
   },
   "devDependencies": {
-    "eslint": "^3.17.1",
+    "eslint": "^3.19.0",
     "nsp": "^2.6.3"
   },
   "engines": {
-    "node": "6.10.0",
+    "node": "6.10.2",
     "npm": "3.10.10"
   }
 }
