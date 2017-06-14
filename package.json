@@ -19,14 +19,14 @@
   "dependencies": {
     "ejs": "^2.5.6",
     "express": "^4.15.3",
-    "socket.io": "^2.0.2"
+    "socket.io": "^2.0.3"
   },
   "devDependencies": {
     "eslint": "^4.0.0",
     "nsp": "^2.6.3"
   },
   "engines": {
-    "node": "8.1.0",
+    "node": "8.1.1",
     "npm": "5.0.3"
   }
 }
