@@ -17,16 +17,16 @@
   },
   "homepage": "https://github.com/shimitei/jagacam#readme",
   "dependencies": {
-    "ejs": "^2.5.7",
+    "ejs": "^2.5.8",
     "express": "^4.16.3",
-    "socket.io": "^2.0.4"
+    "socket.io": "^2.1.0"
   },
   "devDependencies": {
-    "eslint": "^4.18.2",
+    "eslint": "^4.19.1",
     "nsp": "^3.2.1"
   },
   "engines": {
-    "node": "8.10.0",
+    "node": "8.11.0",
     "npm": "5.6.0"
   }
 }
